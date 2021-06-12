@@ -58,7 +58,7 @@ router.patch("/api/todo/:id", (req, res, next) => {
     console.log(req.body);
     console.log(req.params.id);
     const todo = new Todo({
-        _id: req.body.id,
+        _id: req.params.id,
         title: req.body.title,
         content: req.body.content
     });
