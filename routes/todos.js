@@ -7,7 +7,8 @@ router.post("/api/todos", (req, res, next) => {
     const todo = new Todo({
         title: req.body.title,
         content: req.body.content,
-        dateCreated: req.body.dateCreated
+        dateCreated: req.body.dateCreated,
+        updated: req.body.updated
     });
     todo.save().then((result) => {
         res.status(201).json({
@@ -60,7 +61,9 @@ router.patch("/api/todo/:id", (req, res, next) => {
     const todo = new Todo({
         _id: req.params.id,
         title: req.body.title,
-        content: req.body.content
+        content: req.body.content,
+        dateUpdated: req.body.dateUpdated,
+        updated: req.body.updated
     });
     Todo.updateOne({_id: req.params.id}, todo).then((result) => {
         // console.log(result);
