@@ -7,7 +7,8 @@ const todoSchema = mongoose.Schema({
     content: {type: String, required: true },
     dateCreated: {type: Date},
     dateUpdated: {type: Date, default: Date.now},
-    updated: {type: Boolean}
+    updated: {type: Boolean},
+    imagePath: {type: String}
 });
 
 // Creating Models, collection made in db will be prural -> todos

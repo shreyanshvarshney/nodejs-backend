@@ -31,7 +31,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post("/api/todos", upload.single("image"), (req, res, next) => {
+router.post("/api/todos", (req, res, next) => {
     // console.log(req.body);
     const todo = new Todo({
         title: req.body.title,
@@ -48,8 +48,20 @@ router.post("/api/todos", upload.single("image"), (req, res, next) => {
     // console.log(todo);
 });
 
+router.post("/api/upload", upload.single("image"), async (req, res, next) => {
+    // Using async await
+    const doc = await Todo.findById(req.body.id);
+    const url = req.protocol + "://" + req.get("host");
+    doc.imagePath = url + '/images/' + req.file.filename;
+    doc.save().then((result) => {
+        console.log(result);
+        res.status(201).json({
+            message: "Todo Image Uploaded Successfully.",
+        });
+    });
+});
+
 router.get("/api/todos",(req, res, next) => {
-    console.log(req.protocol + "://" + req.get("host"));
     Todo.find((err, docs) => {
         // console.log(docs);
         // Response method is in this block becoz fetching documents is an async task.
@@ -66,6 +78,15 @@ router.delete("/api/todo/:id", (req, res, next) => {
         console.log(result);
         res.status(200).json({
             message: "Todo deleted successfully"
+        });
+    });
+});
+
+router.delete("/api/todos", (req, res, next) => {
+    Todo.remove({}).then((result) => {
+        console.log(result);
+        res.status(200).json({
+            message: "Deleted all todos successfully"
         });
     });
 });

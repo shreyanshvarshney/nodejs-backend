@@ -12,6 +12,8 @@ mongoose.connect("mongodb+srv://shreyansh:ReCsgb9iRYria9fr@cluster0.1jotb.mongod
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
+// For serving the static content of my server, express.static() contains path of the folder that need to be static.
+app.use("/images", express.static("images"));
 
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
