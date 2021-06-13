@@ -1,8 +1,37 @@
 const express = require("express");
+const multer = require("multer");
 const router = express.Router();
 const Todo = require("../models/todo");
 
-router.post("/api/todos", (req, res, next) => {
+// This helper object to extract file extension from mime-type.
+const mimeTypeMap = {
+    "image/png": "png",
+    "image/jpeg": "jpg",
+    "image/jpg": "jpg"
+};
+
+// Configuration of Multer
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const isValid = mimeTypeMap[file.mimetype];
+        let error = new Error("Mime type is not valid.");
+        if (isValid) {
+            error = null;
+        }
+        // Relative path to my server.js file.
+        cb(error, "./images");
+    },
+    filename: (req, file, cb) => {
+        const ext = mimeTypeMap[file.mimetype];
+        const name = file.originalname.toLowerCase().split(' ').join('_') + '_' + Date.now() + '.' + ext;
+        console.log(name);
+        cb(null, name); 
+    }
+});
+
+const upload = multer({ storage: storage });
+
+router.post("/api/todos", upload.single("image"), (req, res, next) => {
     // console.log(req.body);
     const todo = new Todo({
         title: req.body.title,
@@ -20,6 +49,7 @@ router.post("/api/todos", (req, res, next) => {
 });
 
 router.get("/api/todos",(req, res, next) => {
+    console.log(req.protocol + "://" + req.get("host"));
     Todo.find((err, docs) => {
         // console.log(docs);
         // Response method is in this block becoz fetching documents is an async task.
