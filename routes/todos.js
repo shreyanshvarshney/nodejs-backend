@@ -114,7 +114,8 @@ router.patch("/api/todo/:id", (req, res, next) => {
         title: req.body.title,
         content: req.body.content,
         dateUpdated: req.body.dateUpdated,
-        updated: req.body.updated
+        updated: req.body.updated,
+        imagePath: req.body.imagePath
     });
     Todo.updateOne({_id: req.params.id}, todo).then((result) => {
         // console.log(result);
