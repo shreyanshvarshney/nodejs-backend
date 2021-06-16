@@ -19,7 +19,7 @@ app.use("/images", express.static("images"));
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     // Adding some headers other than defaults.
-    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     // To control which HTTP verbs are allowed.
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
     next();
