@@ -62,12 +62,27 @@ router.post("/api/upload", upload.single("image"), async (req, res, next) => {
 });
 
 router.get("/api/todos",(req, res, next) => {
-    Todo.find((err, docs) => {
-        // console.log(docs);
-        // Response method is in this block becoz fetching documents is an async task.
+    // + to parse string into integer value.
+    const pageSize = +req.query.pageSize;
+    const pageIndex = +req.query.pageIndex;
+    const query = Todo.find();
+    let documents;
+    // Mongoose allow chaining of query its like: Todo.find().skip().limit().then();
+    if (pageSize && pageIndex) {
+        // console.log("Got pageSize: " + pageSize + "and pageIndex: " + pageIndex);
+        query
+        .skip(pageSize * (pageIndex-1))
+        .limit(pageSize);
+    }
+    query.then((docs) => {
+        documents = docs;
+        return Todo.countDocuments();
+    })
+    .then((count) => {
         res.status(200).json({
             message: "Todos fetched successfully",
-            todos: docs
+            todos: documents,
+            count: count
         });
     });
 });
