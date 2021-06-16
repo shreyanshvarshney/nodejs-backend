@@ -7,6 +7,9 @@ const router = express.Router();
 
 // To check wheather a particular route is requested by an authenticated user, 
 // I will make my custom middleware to check authentication. Like done for uploading files with multer.
+// That custom middleware will be just a function which recieves args -> (req, res, next)
+// Middleware is just a function which will be executed on an incoming request.
+// My custom middleware func will executed before the final middleware fucn.
 
 router.post("/signup", (req, res, next) => {
     if (!req.body.name || !req.body.email || !req.body.password) {
@@ -63,7 +66,7 @@ router.post("/login", (req, res, next) => {
                 message: "Authentication Failed."
             });
         }
-        // Configuring JWT Token as now user is authenticated
+        // Configuring JWT Token as now user is authenticated/(in our db) for sure
         const token = jwt.sign({email: user.email, id: user._id}, "helloworldgta5", {expiresIn: "1h"});
         res.status(200).json({
             token: token

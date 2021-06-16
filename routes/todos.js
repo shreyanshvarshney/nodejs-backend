@@ -1,5 +1,7 @@
 const express = require("express");
 const multer = require("multer");
+
+const checkAuth = require("../middleware/check-auth");
 const router = express.Router();
 const Todo = require("../models/todo");
 
@@ -30,7 +32,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-router.post("/api/todos", (req, res, next) => {
+router.post("/api/todos", checkAuth, (req, res, next) => {
     // console.log(req.body);
     const todo = new Todo({
         title: req.body.title,
@@ -48,7 +50,7 @@ router.post("/api/todos", (req, res, next) => {
 });
 
 // Extra multer middleware is added to this route, to extract any files that are part of the incoming request.
-router.post("/api/upload", upload.single("image"), async (req, res, next) => {
+router.post("/api/upload", checkAuth, upload.single("image"), async (req, res, next) => {
     // Using async await
     const doc = await Todo.findById(req.body.id);
     const url = req.protocol + "://" + req.get("host");
@@ -61,7 +63,7 @@ router.post("/api/upload", upload.single("image"), async (req, res, next) => {
     });
 });
 
-router.get("/api/todos",(req, res, next) => {
+router.get("/api/todos", (req, res, next) => {
     // + to parse string into integer value.
     const pageSize = +req.query.pageSize;
     const pageIndex = +req.query.pageIndex;
@@ -87,7 +89,7 @@ router.get("/api/todos",(req, res, next) => {
     });
 });
 
-router.delete("/api/todo/:id", (req, res, next) => {
+router.delete("/api/todo/:id", checkAuth, (req, res, next) => {
     console.log(req.params.id);
     Todo.deleteOne({_id: req.params.id}).then((result) => {
         console.log(result);
@@ -97,7 +99,7 @@ router.delete("/api/todo/:id", (req, res, next) => {
     });
 });
 
-router.delete("/api/todos", (req, res, next) => {
+router.delete("/api/todos", checkAuth, (req, res, next) => {
     Todo.remove({}).then((result) => {
         console.log(result);
         res.status(200).json({
@@ -121,7 +123,7 @@ router.get("/api/todo/:id", (req, res, next) => {
     });
 });
 
-router.patch("/api/todo/:id", (req, res, next) => {
+router.patch("/api/todo/:id", checkAuth, (req, res, next) => {
     console.log(req.body);
     console.log(req.params.id);
     const todo = new Todo({
