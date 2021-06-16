@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
 const todosRoutes = require("./routes/todos");
+const userRoutes = require("./routes/user");
 
 mongoose.connect("mongodb+srv://shreyansh:ReCsgb9iRYria9fr@cluster0.1jotb.mongodb.net/todo-app?retryWrites=true&w=majority").then(() => {
     console.log("Database Connected!");
@@ -29,6 +30,7 @@ app.use((req, res, next) => {
     next(); 
 });
 
+app.use("/api/user", userRoutes);
 app.use(todosRoutes);
 
 module.exports = app;

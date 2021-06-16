@@ -28,7 +28,6 @@ const storage = multer.diskStorage({
         cb(null, name); 
     }
 });
-
 const upload = multer({ storage: storage });
 
 router.post("/api/todos", (req, res, next) => {
@@ -48,6 +47,7 @@ router.post("/api/todos", (req, res, next) => {
     // console.log(todo);
 });
 
+// Extra multer middleware is added to this route, to extract any files that are part of the incoming request.
 router.post("/api/upload", upload.single("image"), async (req, res, next) => {
     // Using async await
     const doc = await Todo.findById(req.body.id);
