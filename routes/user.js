@@ -57,6 +57,7 @@ router.post("/login", (req, res, next) => {
         }
         user = result;
         return bcrypt.compare(req.body.password, result.password);
+        // Chaining of promises
     })
     .then((result) => {
         // result will be a boolean wheather the encrypted pass matches the password send by the client while login.
@@ -69,7 +70,14 @@ router.post("/login", (req, res, next) => {
         // Configuring JWT Token as now user is authenticated/(in our db) for sure
         const token = jwt.sign({email: user.email, id: user._id}, "helloworldgta5", {expiresIn: "1h"});
         res.status(200).json({
-            token: token
+            token: token,
+            // Time in secs
+            expiresIn: 3600,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email
+            }
         });
     })
     .catch((err) => {
