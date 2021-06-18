@@ -64,11 +64,11 @@ router.post("/api/upload", checkAuth, upload.single("image"), async (req, res, n
     });
 });
 
-router.get("/api/todos", (req, res, next) => {
-    // + to parse string into integer value.
+router.get("/api/todos", checkAuth, (req, res, next) => {
+    // + to parse string(query params) into integer value.
     const pageSize = +req.query.pageSize;
     const pageIndex = +req.query.pageIndex;
-    const query = Todo.find();
+    const query = Todo.find({userId: req.userData.userId});
     let documents;
     // Mongoose allow chaining of query its like: Todo.find().skip().limit().then();
     if (pageSize && pageIndex) {
@@ -79,7 +79,7 @@ router.get("/api/todos", (req, res, next) => {
     }
     query.then((docs) => {
         documents = docs;
-        return Todo.countDocuments();
+        return Todo.countDocuments({userId: req.userData.userId});
     })
     .then((count) => {
         res.status(200).json({
