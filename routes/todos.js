@@ -38,7 +38,8 @@ router.post("/api/todos", checkAuth, (req, res, next) => {
         title: req.body.title,
         content: req.body.content,
         dateCreated: req.body.dateCreated,
-        updated: req.body.updated
+        updated: req.body.updated,
+        userId: req.userData.userId
     });
     todo.save().then((result) => {
         res.status(201).json({
