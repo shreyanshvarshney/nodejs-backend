@@ -49,9 +49,9 @@ router.post("/login", (req, res, next) => {
     User.findOne({email: req.body.email})
     .then((result) => {
         // result will be the user document of email equal to res.body.email
-        console.log(result);
+        // console.log(result);
         if (!result) {
-            return res.send(401).json({
+            return res.status(401).json({
                 message: "Authentication Failed."
             });
         }
@@ -61,9 +61,9 @@ router.post("/login", (req, res, next) => {
     })
     .then((result) => {
         // result will be a boolean wheather the encrypted pass matches the password send by the client while login.
-        console.log(result);
+        // console.log(result);
         if (!result) {
-            return res.send(401).json({
+            return res.status(401).json({
                 message: "Authentication Failed."
             });
         }
@@ -81,8 +81,8 @@ router.post("/login", (req, res, next) => {
         });
     })
     .catch((err) => {
-        console.log(err);
-        return res.send(401).json({
+        // console.log(err);
+        return res.status(401).json({
             message: "Invalid Login Credentials!"
         });
     });

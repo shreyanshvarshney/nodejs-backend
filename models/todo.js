@@ -7,8 +7,8 @@ const todoSchema = mongoose.Schema({
     content: {type: String, required: true },
     // This creator id will be related to my User model/collection
     userId: {type: mongoose.Schema.Types.ObjectId, ref: "User", required: true},
-    dateCreated: {type: Date},
-    dateUpdated: {type: Date, default: Date.now},
+    dateCreated: {type: String},
+    dateUpdated: {type: String, default: null},
     updated: {type: Boolean, default: false},
     imagePath: {type: String, default: null},
 });

@@ -34,13 +34,13 @@ const upload = multer({ storage: storage });
 
 router.post("/api/todos", checkAuth, (req, res, next) => {
     if (!req.body.title || !req.body.content) {
-        return res.status(400).json({message: "Please provide todo creation required fields"});
+        return res.status(400).json({message: "Missing required fields"});
     }
     // console.log(req.body);
     const todo = new Todo({
         title: req.body.title,
         content: req.body.content,
-        dateCreated: req.body.dateCreated,
+        dateCreated: new Date().toISOString(),
         userId: req.userData.userId
     });
     todo.save()
@@ -122,6 +122,9 @@ router.get("/api/todo/:id", (req, res, next) => {
 });
 
 router.patch("/api/todo/:id", checkAuth, async (req, res, next) => {
+    if (!req.body.updated || !req.body.dateUpdated) {
+        return res.status(400).json({message: "Missing required fields"});
+    }
     console.log(req.body);
     console.log(req.params.id);
     const todo = new Todo({
