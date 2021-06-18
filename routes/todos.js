@@ -33,19 +33,25 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 router.post("/api/todos", checkAuth, (req, res, next) => {
+    if (!req.body.title || !req.body.content) {
+        return res.status(400).json({message: "Please provide todo creation required fields"});
+    }
     // console.log(req.body);
     const todo = new Todo({
         title: req.body.title,
         content: req.body.content,
         dateCreated: req.body.dateCreated,
-        updated: req.body.updated,
         userId: req.userData.userId
     });
-    todo.save().then((result) => {
+    todo.save()
+    .then((result) => {
         res.status(201).json({
-            message: "Todo successfully created",
+            message: "Todo successfully created!",
             todoId: result._id
         });
+    })
+    .catch((err) => {
+        res.status(500).json({message: "Error in creating a Todo!"});
     });
     // console.log(todo);
 });
@@ -56,11 +62,13 @@ router.post("/api/upload", checkAuth, upload.single("image"), async (req, res, n
     const doc = await Todo.findById(req.body.id);
     const url = req.protocol + "://" + req.get("host");
     doc.imagePath = url + '/images/' + req.file.filename;
-    doc.save().then((result) => {
+    doc.save()
+    .then((result) => {
         console.log(result);
-        res.status(201).json({
-            message: "Todo Image Uploaded Successfully.",
-        });
+        res.status(201).json({message: "Todo Image Uploaded Successfully!"});
+    })
+    .catch((err) => {
+        res.status(500).json({message: "Error in uploading image!"});
     });
 });
 
@@ -77,7 +85,8 @@ router.get("/api/todos", checkAuth, (req, res, next) => {
         .skip(pageSize * (pageIndex-1))
         .limit(pageSize);
     }
-    query.then((docs) => {
+    query
+    .then((docs) => {
         documents = docs;
         return Todo.countDocuments({userId: req.userData.userId});
     })
@@ -87,44 +96,32 @@ router.get("/api/todos", checkAuth, (req, res, next) => {
             todos: documents,
             count: count
         });
-    });
-});
-
-router.delete("/api/todo/:id", checkAuth, (req, res, next) => {
-    console.log(req.params.id);
-    Todo.deleteOne({_id: req.params.id}).then((result) => {
-        console.log(result);
-        res.status(200).json({
-            message: "Todo deleted successfully"
-        });
-    });
-});
-
-router.delete("/api/todos", checkAuth, (req, res, next) => {
-    Todo.remove({}).then((result) => {
-        console.log(result);
-        res.status(200).json({
-            message: "Deleted all todos successfully"
-        });
+    })
+    .catch((err) => {
+        res.status(500).json({message: "Fetching the todos failed!"});
     });
 });
 
 router.get("/api/todo/:id", (req, res, next) => {
     // console.log(req.params.id);
-    Todo.findById(req.params.id).then((result) => {
-        // console.log(result);
-        res.status(200).json({
-            todo: result
-        });
-    }).catch((reason) => {
-        // console.log(reason);
-        res.status(404).json({
-            message: "Todo with this id not found"
+    Todo.findById(req.params.id)
+    .then((result) => {
+        if (result) {
+            res.status(200).json({todo: result});
+        }
+        else {
+            console.log(result, "result");
+            res.status(404).json({message: "Todo not found!"});
+        }
+    })
+    .catch((err) => {
+        res.status(500).json({
+            message: "Fetching the todo failed!"
         });
     });
 });
 
-router.patch("/api/todo/:id", checkAuth, (req, res, next) => {
+router.patch("/api/todo/:id", checkAuth, async (req, res, next) => {
     console.log(req.body);
     console.log(req.params.id);
     const todo = new Todo({
@@ -136,11 +133,44 @@ router.patch("/api/todo/:id", checkAuth, (req, res, next) => {
         imagePath: req.body.imagePath,
         userId: req.userData.userId
     });
-    Todo.updateOne({_id: req.params.id}, todo).then((result) => {
+    Todo.updateOne({_id: req.params.id}, todo)
+    .then((result) => {
+        if (result.nModified > 0) {
+            res.status(200).json({message: "Todo updated successfully!"});
+        } else {
+            res.status(404).json({ message: "Todo not found!" });
+        }
         // console.log(result);
-        res.status(200).json({
-            message: "Todo updated successfully"
-        });
+    })
+    .catch((err) => {
+        res.status(500).json({message: "Couldn't update the todo!"});
+    });
+});
+
+router.delete("/api/todos", checkAuth, (req, res, next) => {
+    Todo.remove({})
+    .then((result) => {
+        console.log(result);
+        res.status(200).json({message: "Deleted all todos successfully"});
+    })
+    .catch((err) => {
+        res.status(500).json({message: "Couldn't delete the todos!"});
+    });
+});
+
+router.delete("/api/todo/:id", checkAuth, (req, res, next) => {
+    console.log(req.params.id);
+    Todo.deleteOne({_id: req.params.id})
+    .then((result) => {
+        console.log(result);
+        if (result.deletedCount > 0) {
+            res.status(200).json({message: "Todo deleted successfully"});
+        } else {
+            res.status(404).json({message: "Todo not found"});
+        }
+    })
+    .catch((err) => {
+        res.status(500).json({message: "Couldn't delete the todo!"});
     });
 });
 

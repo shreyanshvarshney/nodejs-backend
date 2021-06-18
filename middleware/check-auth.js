@@ -21,7 +21,7 @@ module.exports = (req, res, next) => {
         // And if it is verified successfully then i will allow this request to the next middleware.
     } catch {
         res.status(401).json({
-            message: "Authentication Failed."
+            message: "Please Login First!"
         });
     }
 };
