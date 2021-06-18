@@ -133,7 +133,8 @@ router.patch("/api/todo/:id", checkAuth, (req, res, next) => {
         content: req.body.content,
         dateUpdated: req.body.dateUpdated,
         updated: req.body.updated,
-        imagePath: req.body.imagePath
+        imagePath: req.body.imagePath,
+        userId: req.userData.userId
     });
     Todo.updateOne({_id: req.params.id}, todo).then((result) => {
         // console.log(result);
