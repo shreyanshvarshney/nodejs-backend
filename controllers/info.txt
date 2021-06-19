@@ -1,0 +1,10 @@
+Controllers will hold the logic of my /routes and 
+will simply forward the requests to my controller actions from within the /routes files.
+
+In my /routes files if I want to see which routes i have and which middleware they use.
+This can be simplified using adding Controller files for every file in /routes folder.
+
+So, controllers/user.js will contain all user related (req, res, next) methods.
+
+In /routes/user.js I will listen to a particular http verbs, path filter and 
+the method executed for that route request will be mentioned in controllers/user.js
