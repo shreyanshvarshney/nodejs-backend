@@ -6,7 +6,7 @@ module.exports = (req, res, next) => {
     try {
         // if we not have anything in auth header means below line will throw error, then this will go to catch block.
         const token = req.headers.authorization.split(" ")[1];
-        const decodedToken = jwt.verify(token, "helloworldgta5");
+        const decodedToken = jwt.verify(token, process.env.JWT_KEY);
         // This checks if this token is valid, created by this package on my server.
         // if jwt.verify() throws an error then will go to catch block and send that error response.
         

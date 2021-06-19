@@ -68,7 +68,7 @@ router.post("/login", (req, res, next) => {
             });
         }
         // Configuring JWT Token as now user is authenticated/(in our db) for sure
-        const token = jwt.sign({email: user.email, id: user._id}, "helloworldgta5", {expiresIn: "1h"});
+        const token = jwt.sign({email: user.email, id: user._id}, process.env.JWT_KEY, {expiresIn: "1h"});
         res.status(200).json({
             token: token,
             // Time in secs

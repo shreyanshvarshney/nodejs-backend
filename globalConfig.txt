@@ -1,0 +1,14 @@
+As in dev environment nodemon is handling my nodejs server. So I can manage my Global Environment 
+Variables with its nodemon.json file.
+It is needed because if some pass or secret key changes and my app is already deployed then i have to 
+change my source code for just changing a config and re-deploy it.
+
+This situation can be handled more elegantly by using GLOBAL SETTINGS "Environment Variables".
+Every hosting providers for node.js apps gives us a feature to inject Global Variables in running Node program.
+
+For Nodejs these Global Variable are injected into the running node process and there I can access them
+on a special object (process.env) holds all injected environment variables.
+So I can access like: process.env.JWT_KEY
+
+So for development I can use Node Environment Variables feature
+and mentioned these Global Variables in nodemon.json config file.
