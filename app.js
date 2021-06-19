@@ -32,6 +32,10 @@ app.use((req, res, next) => {
     next(); 
 });
 
+app.use("/health", (req, res, next) => {
+    res.status(200).json({status: "ok"});
+});
+
 app.use("/api/user", userRoutes);
 app.use("/api/todos", todosRoutes);
 app.use("/api/upload", imageUploadRoutes);
