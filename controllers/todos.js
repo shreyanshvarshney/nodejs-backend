@@ -57,7 +57,7 @@ exports.getTodos = (req, res, next) => {
 
 exports.getTodo = (req, res, next) => {
     // console.log(req.params.id);
-    Todo.findById(req.params.id)
+    Todo.findOne({_id: req.params.id, userId: req.userData.userId})
     .then((result) => {
         if (result) {
             res.status(200).json({todo: result});
@@ -89,7 +89,7 @@ exports.updateTodo = (req, res, next) => {
         imagePath: req.body.imagePath,
         userId: req.userData.userId
     });
-    Todo.updateOne({_id: req.params.id}, todo)
+    Todo.updateOne({_id: req.params.id, userId: req.userData.userId}, todo)
     .then((result) => {
         if (result.nModified > 0) {
             res.status(200).json({message: "Todo updated successfully!"});
