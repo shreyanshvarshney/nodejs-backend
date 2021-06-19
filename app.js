@@ -3,13 +3,15 @@ const mongoose = require("mongoose");
 const app = express();
 const todosRoutes = require("./routes/todos");
 const userRoutes = require("./routes/user");
+const imageUploadRoutes = require("./routes/image-upload");
 
-mongoose.connect("mongodb+srv://shreyansh:" + process.env.MONGO_ATLAS_PASS + "@cluster0.1jotb.mongodb.net/todo-app?retryWrites=true&w=majority").then(() => {
-    console.log("Database Connected!");
-})
-.catch((reason) => {
-    console.log("Database Connection Failed!", reason);
-})
+mongoose.connect("mongodb+srv://shreyansh:" + process.env.MONGO_ATLAS_PASS + "@cluster0.1jotb.mongodb.net/todo-app?retryWrites=true&w=majority")
+    .then(() => {
+        console.log("Database Connected!");
+    })
+    .catch((reason) => {
+        console.log("Database Connection Failed!");
+    })
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
@@ -31,6 +33,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/user", userRoutes);
-app.use(todosRoutes);
+app.use("/api/todos", todosRoutes);
+app.use("/api/upload", imageUploadRoutes);
 
 module.exports = app;

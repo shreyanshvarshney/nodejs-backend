@@ -1,38 +1,10 @@
 const express = require("express");
-const multer = require("multer");
 
 const checkAuth = require("../middleware/check-auth");
 const router = express.Router();
 const Todo = require("../models/todo");
 
-// This helper object to extract file extension from mime-type.
-const mimeTypeMap = {
-    "image/png": "png",
-    "image/jpeg": "jpg",
-    "image/jpg": "jpg"
-};
-
-// Configuration of Multer
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const isValid = mimeTypeMap[file.mimetype];
-        let error = new Error("Mime type is not valid.");
-        if (isValid) {
-            error = null;
-        }
-        // Relative path to my server.js file.
-        cb(error, "./images");
-    },
-    filename: (req, file, cb) => {
-        const ext = mimeTypeMap[file.mimetype];
-        const name = file.originalname.toLowerCase().split(' ').join('_') + '_' + Date.now() + '.' + ext;
-        console.log(name);
-        cb(null, name); 
-    }
-});
-const upload = multer({ storage: storage });
-
-router.post("/api/todos", checkAuth, (req, res, next) => {
+router.post("", checkAuth, (req, res, next) => {
     if (!req.body.title || !req.body.content) {
         return res.status(400).json({message: "Missing required fields"});
     }
@@ -56,23 +28,7 @@ router.post("/api/todos", checkAuth, (req, res, next) => {
     // console.log(todo);
 });
 
-// Extra multer middleware is added to this route, to extract any files that are part of the incoming request.
-router.post("/api/upload", checkAuth, upload.single("image"), async (req, res, next) => {
-    // Using async await
-    const doc = await Todo.findById(req.body.id);
-    const url = req.protocol + "://" + req.get("host");
-    doc.imagePath = url + '/images/' + req.file.filename;
-    doc.save()
-    .then((result) => {
-        console.log(result);
-        res.status(201).json({message: "Todo Image Uploaded Successfully!"});
-    })
-    .catch((err) => {
-        res.status(500).json({message: "Error in uploading image!"});
-    });
-});
-
-router.get("/api/todos", checkAuth, (req, res, next) => {
+router.get("", checkAuth, (req, res, next) => {
     // + to parse string(query params) into integer value.
     const pageSize = +req.query.pageSize;
     const pageIndex = +req.query.pageIndex;
@@ -102,7 +58,7 @@ router.get("/api/todos", checkAuth, (req, res, next) => {
     });
 });
 
-router.get("/api/todo/:id", (req, res, next) => {
+router.get("/:id", (req, res, next) => {
     // console.log(req.params.id);
     Todo.findById(req.params.id)
     .then((result) => {
@@ -121,7 +77,7 @@ router.get("/api/todo/:id", (req, res, next) => {
     });
 });
 
-router.patch("/api/todo/:id", checkAuth, async (req, res, next) => {
+router.patch("/:id", checkAuth, async (req, res, next) => {
     if (!req.body.updated || !req.body.dateUpdated) {
         return res.status(400).json({message: "Missing required fields"});
     }
@@ -150,7 +106,7 @@ router.patch("/api/todo/:id", checkAuth, async (req, res, next) => {
     });
 });
 
-router.delete("/api/todos", checkAuth, (req, res, next) => {
+router.delete("", checkAuth, (req, res, next) => {
     Todo.remove({})
     .then((result) => {
         console.log(result);
@@ -161,7 +117,7 @@ router.delete("/api/todos", checkAuth, (req, res, next) => {
     });
 });
 
-router.delete("/api/todo/:id", checkAuth, (req, res, next) => {
+router.delete("/:id", checkAuth, (req, res, next) => {
     console.log(req.params.id);
     Todo.deleteOne({_id: req.params.id})
     .then((result) => {
