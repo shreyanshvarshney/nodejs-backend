@@ -25,9 +25,13 @@ exports.createUser = (req, res, next) => {
         });
         user.save()
         .then((result) => {
+            const token = generateAuthToken(result);
             res.status(201).json({
                 message: "User created successfully",
-                data: {
+                token: token,
+                // Time in secs
+                expiresIn: 3600,
+                user: {
                     id: result._id,
                     name: result.name,
                     email: result.email
@@ -84,7 +88,7 @@ exports.userLogin = (req, res, next) => {
             });
         }
         // Configuring JWT Token as now user is authenticated/(in our db) for sure
-        const token = jwt.sign({email: user.email, id: user._id}, process.env.JWT_KEY, {expiresIn: "1h"});
+        const token = generateAuthToken(user);
         res.status(200).json({
             token: token,
             // Time in secs
@@ -103,3 +107,8 @@ exports.userLogin = (req, res, next) => {
         });
     });
 }
+
+const generateAuthToken = (user) => {
+    const token = jwt.sign({email: user.email, id: user._id}, process.env.JWT_KEY, {expiresIn: "1h"});
+    return token;
+};
