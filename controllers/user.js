@@ -2,15 +2,20 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
-
+const validations = require("../validations/user");
 // Another way to export in Nodejs in which -> exports.myCustomName = (this function I want to export)
 // Here exports will work as an Object which has two properties we mentions createUser and loginUser of type functions
 exports.createUser = (req, res, next) => {
-    if (!req.body.name || !req.body.email || !req.body.password) {
-        return res.status(400).json({
-            error: "Missing required fields"
-        });
+
+    if (!Object.entries(req.body).length) {
+        return res.status(400).json({message: "Missing User Object"});
     }
+
+    const result = validations.createUserValidation(req.body);
+    if (result) {
+        return res.status(400).json({message: result.message});
+    }
+
     bcrypt.hash(req.body.password, 10)
     .then((hash) => {
         const user = new User({
@@ -22,23 +27,40 @@ exports.createUser = (req, res, next) => {
         .then((result) => {
             res.status(201).json({
                 message: "User created successfully",
-                data: result
+                data: {
+                    id: result._id,
+                    name: result.name,
+                    email: result.email
+                }
             });
         })
-        .catch((reason) => {
+        .catch((err) => {
             res.status(500).json({
-                message: "Invalid Authentication Credentials!"
+                // message: "Invalid Authentication Credentials!"
+                // message: err.message
+                // till here only one error is not covered by Joi that is email already exists.
+                // So this catch block executed only becoz email field is unique: true in mongoose schema.
+                message: "User with this email already exists"
             });
         });
     })
-    .catch((reason) => {
+    .catch((err) => {
         res.status(500).json({
-            error: reason
+            message: err.message
         });
     });
 }
 
 exports.userLogin = (req, res, next) => {
+    if (!Object.entries(req.body).length) {
+        return res.status(400).json({message: "Missing Login Credentials"});
+    }
+
+    const result = validations.userLoginValidation(req.body);
+    if (result) {
+        return res.status(400).json({message: result.message});
+    }
+
     let user; // This will be a document of a verified user matched email.
     User.findOne({email: req.body.email})
     .then((result) => {
