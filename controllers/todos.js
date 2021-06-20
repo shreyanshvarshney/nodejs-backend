@@ -1,11 +1,17 @@
 const Todo = require("../models/todo");
-
+const validations = require("../validations/todos");
 
 exports.createTodo = (req, res, next) => {
-    if (!req.body.title || !req.body.content) {
-        return res.status(400).json({message: "Missing required fields"});
-    }
     // console.log(req.body);
+    if (!Object.entries(req.body).length) {
+        return res.status(400).json({message: "Missing Todo Object"});
+    }
+
+    const result = validations.createTodoValidation(req.body);
+    if (result) {
+        return res.status(400).json({message: result.message});
+    }
+    
     const todo = new Todo({
         title: req.body.title,
         content: req.body.content,
@@ -20,6 +26,7 @@ exports.createTodo = (req, res, next) => {
         });
     })
     .catch((err) => {
+        console.log(err);
         res.status(500).json({message: "Error in creating a Todo!"});
     });
     // console.log(todo);
@@ -32,16 +39,19 @@ exports.getTodos = (req, res, next) => {
     const query = Todo.find({userId: req.userData.userId});
     let documents;
     // Mongoose allow chaining of query its like: Todo.find().skip().limit().then();
+    // A check to see if i have recevied query params or not, if not i will simply return all todos of the user who requested them.
     if (pageSize && pageIndex) {
         // console.log("Got pageSize: " + pageSize + "and pageIndex: " + pageIndex);
         query
         .skip(pageSize * (pageIndex-1))
         .limit(pageSize);
     }
+    // My query will be not executed untill I use .then() because it returns promise
     query
     .then((docs) => {
         documents = docs;
         return Todo.countDocuments({userId: req.userData.userId});
+        // As Todo.countDocuments() returns a promise and I can get its result in next then() block which is number of documents.
     })
     .then((count) => {
         res.status(200).json({
@@ -55,7 +65,12 @@ exports.getTodos = (req, res, next) => {
     });
 }
 
-exports.getTodo = (req, res, next) => {
+exports.getTodo = async (req, res, next) => {
+    try {
+        const result = await Todo.findById(req.params.id);
+    } catch {
+        return res.status(400).json({message: "Todo with the given ID not found"});
+    }
     // console.log(req.params.id);
     Todo.findOne({_id: req.params.id, userId: req.userData.userId})
     .then((result) => {
@@ -74,22 +89,34 @@ exports.getTodo = (req, res, next) => {
     });
 }
 
-exports.updateTodo = (req, res, next) => {
-    if (!req.body.updated || !req.body.dateUpdated) {
-        return res.status(400).json({message: "Missing required fields"});
+exports.updateTodo = async (req, res, next) => {
+    if (!Object.entries(req.body).length) {
+        return res.status(400).json({message: "Missing Todo Object"});
     }
+
+    try {
+        const result = await Todo.findById(req.params.id);
+    } catch {
+        return res.status(400).json({message: "Todo with the given ID not found"});
+    }
+
+    const result = validations.updateTodoValidation(req.body);
+    if (result) {
+        return res.status(400).json({message: result.message});
+    }
+
     console.log(req.body);
     console.log(req.params.id);
     const todo = new Todo({
         _id: req.params.id,
         title: req.body.title,
         content: req.body.content,
-        dateUpdated: req.body.dateUpdated,
-        updated: req.body.updated,
         imagePath: req.body.imagePath,
+        dateUpdated: new Date().toISOString(),
+        updated: true,
         userId: req.userData.userId
     });
-    Todo.updateOne({_id: req.params.id, userId: req.userData.userId}, todo)
+    Todo.updateOne({_id: req.params.id, userId: req.userData.userId}, todo, {runValidators: true})
     .then((result) => {
         if (result.nModified > 0) {
             res.status(200).json({message: "Todo updated successfully!"});
@@ -100,6 +127,7 @@ exports.updateTodo = (req, res, next) => {
     })
     .catch((err) => {
         res.status(500).json({message: "Couldn't update the todo!"});
+        // res.status(500).json({message: err.message});
     });
 }
 
@@ -114,7 +142,12 @@ exports.deleteTodos = (req, res, next) => {
     });
 }
 
-exports.deleteTodo = (req, res, next) => {
+exports.deleteTodo = async (req, res, next) => {
+    try {
+        const result = await Todo.findById(req.params.id);
+    } catch {
+        return res.status(400).json({message: "Todo with the given ID not found"});
+    }
     console.log(req.params.id);
     Todo.deleteOne({_id: req.params.id})
     .then((result) => {
