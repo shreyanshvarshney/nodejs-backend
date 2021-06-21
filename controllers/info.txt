@@ -1,3 +1,6 @@
+Controllers will have ROUTE HANDLERS function which i can say as Middleware function 
+(becoz it takes the req object and either send back the response to the client or pass this to another middleware function)
+
 Controllers will hold the logic of my /routes and 
 will simply forward the requests to my controller actions from within the /routes files.
 
