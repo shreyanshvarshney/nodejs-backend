@@ -1,0 +1,7 @@
+{
+    "name": "Todo App - development",
+    "mail": {
+        "host": "dev-mail-server"
+    },
+    "port": 3000
+}

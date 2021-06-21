@@ -1,0 +1,67 @@
+Their is a NPM Package for managing and  storing configuration settings of my app and 
+overwritting those settings in each environments.
+
+For eg. In development environment I want to use different database or mail server
+
+This package gives me a very clean structure for defining cofigs of all my environments.
+
+For this i will use npm cofig package, installing it by (npm i config)
+
+mkdir config
+cd config
+touch default.json
+
+default.json:
+{
+    "name": "Name of my app"
+}
+
+development.json:
+In this file i can define settings specific to my dev environment
+I can also overwrite the properties defined in default.json and define new properties also.
+{
+    "name": "Name of my app - development",
+    "mail": {
+        "host":"dev-mail-server"
+    }
+    "port": 300
+}
+
+Now if my app.get("env") === "development", development.json will be taken into consideration
+
+production.json:
+{
+    "name": "Name of my app - production",
+    "mail": {
+        "host":"prod-mail-server"
+    }
+}
+
+if my app.get("env") === "production", production.json will be taken into consideration
+
+Try by changing env variable (export NODE_ENV=production/development)
+
+******** However I should not set my app secrets(pass of db, server) in these configuration files *******
+Because this file will go to my source code repo.
+
+So for app secrets, Store them in ENVIRONMENT VARIABLES:
+For eg. export myapp_password=1234
+In dev I set these env variables manually.
+But in production env we have a interface to set these env variables for my app. (Like in aws elastic beanstalk/ec2)
+
+** And read them using config module I have installed
+For reading my custom created env variables I have to create a json file name exactly like this
+Inside config folder => "custom-environment-variables.json"
+In this file I will define the MAPPINGS of configuration settings to environment variables.
+
+Run this in cli first:
+export myapp_password=1234
+
+custom-environment-variables.json
+{
+    "mail": {
+        "password": "myapp_password"
+    }
+}
+
+In this file i will only have the new setting/property which I want to set.

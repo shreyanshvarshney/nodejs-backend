@@ -1,6 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
+const config = require("config");
+
 const app = express();
 const todosRoutes = require("./routes/todos");
 const userRoutes = require("./routes/user");
@@ -38,6 +40,10 @@ app.use((req, res, next) => {
     next();
 });
 
+// Configurations
+console.log(config.get("name"));
+console.log(config.get("mail.host"));
+
 // A express middleware namely, "morgan" HTTP request logger can handle it by itself, by installing it i can replace the below code.
 // app.use((req, res, next) => {
 //     const date = new Date();
@@ -46,6 +52,7 @@ app.use((req, res, next) => {
 // });
 // This if condition checks if my code is running on dev, testing, staging or production environment.
 // With this check Morgan Logger will only work in Development environment.
+// Detecting the env in which my app is running, default value of app.get("env") is development.
 if (app.get("env") === "development") {
     // console.log(app.get("env"));
     console.log("Morgan request logger enabled...");
