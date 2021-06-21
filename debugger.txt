@@ -1,0 +1,38 @@
+debug package is really useful for debugging my app.
+
+
+This console.log() is JS programmers oldest friend, I use it all the time for debugging.
+The problem with that approach is when we are done with console.log() use, I delete them or comment it.
+Or sometime later I again need that, so write the console.log() or remove comments.
+This approach is very TEDIOUS.
+** A proper way to Log the messages for the purpose of debugging is use debug package. **
+Now I can replace all console.log() statements with a call to debug() function.
+And the i can use "AN ENVIRONMENT VARIABLE TO ENABLE AND DISABLE DEBUGGING messages".
+Now i this i dont have to everytime delete those debug() statements or comment them out.
+I can control them from outsite (Environment Variable)
+
+npm i debug
+
+require("debug") this require function returns an function so I can do like this:
+require("debug")("app:db") the function argument consists the NAMESPACE name that i will define for debugging.
+
+So the usage of the this NAMESPACE will be like "app:db" can be used for debugging messages related to database.
+
+*****Environment Variable for this:
+1. export DEBUG=app:db
+to see messages for the namespace app:db
+
+2. export DEBUG=app:db,app:startup
+to see messages for multiple namespacses
+
+3. export DEBUG=
+to NOT see any debug() messages
+
+4. export DEBUG=app:*
+to see debug messages of all namespacses starting with "app:"
+
+5. (DEBUG=app:db nodemon server.js) or (DEBUG=app:db node server.js)
+A shortcut command to start debugger with node server
+
+debug("message") It is shorter than writing console.log("message")
+and gives me more power and control over how much debugger info i have to see.

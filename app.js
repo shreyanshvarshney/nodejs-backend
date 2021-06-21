@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 const config = require("config");
+const debug =  require("debug")("app:db");
 
 const app = express();
 const todosRoutes = require("./routes/todos");
@@ -14,10 +15,10 @@ mongoose.set('useCreateIndex', true);
 mongoose.set('useFindAndModify', false);
 mongoose.connect("mongodb+srv://shreyansh:" + process.env.MONGO_ATLAS_PASS + "@cluster0.1jotb.mongodb.net/todo-app?retryWrites=true&w=majority")
     .then(() => {
-        console.log("Database Connected!");
+        debug("Database Connected!");
     })
     .catch((reason) => {
-        console.log("Database Connection Failed!");
+        debug("Database Connection Failed!");
     })
 
 // These are also middlewares

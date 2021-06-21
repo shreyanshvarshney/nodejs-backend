@@ -1,6 +1,7 @@
 {
     "env": {
         "MONGO_ATLAS_PASS": "ReCsgb9iRYria9fr",
-        "JWT_KEY": "helloworldgta5"
+        "JWT_KEY": "helloworldgta5",
+        "DEBUG": "app:*"
     }
 }

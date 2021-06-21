@@ -16,6 +16,7 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "config": "^3.3.6",
+    "debug": "^4.3.1",
     "express": "^4.17.1",
     "install": "^0.13.0",
     "joi": "^17.4.0",

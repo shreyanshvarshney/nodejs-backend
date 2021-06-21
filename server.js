@@ -1,6 +1,6 @@
 const http = require("http");
 const app = require("./app");
-const debug = require("debug")("node-angular");
+const debug =  require("debug")("app:startup");
 
 const normalizePort = (val) => {
     const port = parseInt(val, 10);
@@ -35,7 +35,7 @@ const onListening = () => {
     const bind = typeof port === "string" ? "pipe " + port : "port " + port;
     // console.log(bind);
     debug("Listening on: " + bind);
-    console.log("Listening on: " + bind);
+    // console.log("Listening on: " + bind);
 };
 
 const port = normalizePort(process.env.PORT || 3000);
